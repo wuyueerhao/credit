@@ -12,7 +12,6 @@ import {
   Wallet,
   FileText,
   Package,
-  Package2,
 } from "lucide-react"
 import { AnimateIcon } from "@/components/animate-ui/icons/icon"
 import { ChevronLeft } from "@/components/animate-ui/icons/chevron-left"

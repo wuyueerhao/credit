@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Calendar } from "@/components/ui/calendar"
 import { Separator } from "@/components/ui/separator"
-import { ArrowUpRight, ArrowDownRight, ArrowRightLeft, CalendarIcon, ChevronDown, Filter, X } from "lucide-react"
+import { CalendarIcon, ChevronDown, Filter, X } from "lucide-react"
 import { format } from "date-fns"
 import { zhCN } from "date-fns/locale"
 
@@ -44,30 +44,6 @@ interface Transaction {
   time: string
   status: TransactionStatus
 }
-
-// 统计数据
-const stats = [
-  {
-    title: "总收款",
-    amount: "¥125,430.00",
-    color: "text-green-600",
-  },
-  {
-    title: "总付款",
-    amount: "¥45,230.00",
-    color: "text-red-600",
-  },
-  {
-    title: "总转账",
-    amount: "¥22,100.00",
-    color: "text-blue-600",
-  },
-  {
-    title: "净收益",
-    amount: "¥80,200.00",
-    color: "text-primary",
-  }
-]
 
 // 模拟交易数据
 const transactions: Transaction[] = [
