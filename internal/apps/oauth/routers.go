@@ -98,12 +98,16 @@ func Callback(c *gin.Context) {
 }
 
 type BasicUserInfo struct {
-	ID         uint64     `json:"id"`
-	Username   string     `json:"username"`
-	Nickname   string     `json:"nickname"`
-	TrustLevel TrustLevel `json:"trust_level"`
-	AvatarUrl  string     `json:"avatar_url"`
-	Score      int8       `json:"score"`
+	ID               uint64     `json:"id"`
+	Username         string     `json:"username"`
+	Nickname         string     `json:"nickname"`
+	TrustLevel       TrustLevel `json:"trust_level"`
+	AvatarUrl        string     `json:"avatar_url"`
+	TotalBalance     int64      `json:"total_balance"`
+	AvailableBalance int64      `json:"available_balance"`
+	RemainQuota      int64      `json:"remain_quota"`
+	PayLevel         PayLevel   `json:"pay_level"`
+	DailyLimit       *int64     `json:"daily_limit"`
 }
 
 // UserInfo godoc
@@ -112,24 +116,28 @@ type BasicUserInfo struct {
 // @Success 200 {object} utils.ResponseAny
 // @Router /api/v1/oauth/user-info [get]
 func UserInfo(c *gin.Context) {
-	// init
-	userID := GetUserIDFromContext(c)
-	// query db
-	var user User
-	tx := db.DB(c.Request.Context()).Where("id = ?", userID).First(&user)
-	if tx.Error != nil {
-		c.JSON(http.StatusInternalServerError, utils.Err(tx.Error.Error()))
+	user, _ := GetUserFromContext(c)
+
+	var payConfig UserPayConfig
+	if err := db.DB(c.Request.Context()).Where("min_score <= ?", user.PayScore).
+		Where("max_score IS NULL OR max_score > ?", user.PayScore).First(&payConfig).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, utils.Err(err.Error()))
 		return
 	}
+
 	c.JSON(
 		http.StatusOK,
 		utils.OK(BasicUserInfo{
-			ID:         user.ID,
-			Username:   user.Username,
-			Nickname:   user.Nickname,
-			TrustLevel: user.TrustLevel,
-			AvatarUrl:  user.AvatarUrl,
-			Score:      user.Score,
+			ID:               user.ID,
+			Username:         user.Username,
+			Nickname:         user.Nickname,
+			TrustLevel:       user.TrustLevel,
+			AvatarUrl:        user.AvatarUrl,
+			TotalBalance:     user.TotalBalance,
+			AvailableBalance: user.AvailableBalance,
+			RemainQuota:      0,
+			PayLevel:         payConfig.Level,
+			DailyLimit:       payConfig.DailyLimit,
 		}),
 	)
 }

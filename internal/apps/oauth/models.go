@@ -27,6 +27,7 @@ package oauth
 import (
 	"time"
 
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
@@ -40,18 +41,32 @@ type OAuthUserInfo struct {
 }
 
 type User struct {
-	ID             uint64     `json:"id" gorm:"primaryKey"`
-	Username       string     `json:"username" gorm:"size:255;unique"`
-	Nickname       string     `json:"nickname" gorm:"size:255"`
-	AvatarUrl      string     `json:"avatar_url" gorm:"size:255"`
-	IsActive       bool       `json:"is_active" gorm:"default:true"`
-	TrustLevel     TrustLevel `json:"trust_level"`
-	Score          int8       `json:"score"`
-	ViolationCount uint8      `json:"violation_count" gorm:"default:0"`
-	IsAdmin        bool       `json:"is_admin" gorm:"default:false"`
-	LastLoginAt    time.Time  `json:"last_login_at" gorm:"index"`
-	CreatedAt      time.Time  `json:"created_at" gorm:"autoCreateTime;index"`
-	UpdatedAt      time.Time  `json:"updated_at" gorm:"autoUpdateTime;index"`
+	ID               uint64     `json:"id" gorm:"primaryKey"`
+	Username         string     `json:"username" gorm:"size:255;unique;index"`
+	Nickname         string     `json:"nickname" gorm:"size:255"`
+	AvatarUrl        string     `json:"avatar_url" gorm:"size:255"`
+	TrustLevel       TrustLevel `json:"trust_level" gorm:"index"`
+	PayScore         int64      `json:"pay_score" gorm:"default:0;index"`
+	PayKey           string     `json:"pay_key" gorm:"size:10;index"`
+	SignKey          string     `json:"sign_key" gorm:"size:128"`
+	TotalBalance     int64      `json:"total_balance" gorm:"default:0;index"`
+	AvailableBalance int64      `json:"available_balance" gorm:"default:0;index"`
+	IsActive         bool       `json:"is_active" gorm:"default:true"`
+	IsAdmin          bool       `json:"is_admin" gorm:"default:false"`
+	LastLoginAt      time.Time  `json:"last_login_at" gorm:"index"`
+	CreatedAt        time.Time  `json:"created_at" gorm:"autoCreateTime;index"`
+	UpdatedAt        time.Time  `json:"updated_at" gorm:"autoUpdateTime;index"`
+}
+
+type UserPayConfig struct {
+	ID         uint64          `json:"id" gorm:"primaryKey"`
+	Level      PayLevel        `json:"level" gorm:"uniqueIndex;not null"`
+	MinScore   int64           `json:"min_score" gorm:"not null;index"`
+	MaxScore   *int64          `json:"max_score" gorm:"index"`
+	DailyLimit *int64          `json:"daily_limit"`
+	FeeRate    decimal.Decimal `json:"fee_rate" gorm:"type:numeric(10,2);default:0"`
+	CreatedAt  time.Time       `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt  time.Time       `json:"updated_at" gorm:"autoUpdateTime"`
 }
 
 func (u *User) Exact(tx *gorm.DB, id uint64) error {

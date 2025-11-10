@@ -22,27 +22,4 @@
  * SOFTWARE.
  */
 
-package migrator
-
-import (
-	"context"
-	"log"
-
-	"github.com/linux-do/pay/internal/apps/oauth"
-	"github.com/linux-do/pay/internal/config"
-	"github.com/linux-do/pay/internal/db"
-)
-
-func Migrate() {
-	if !config.Config.Database.Enabled {
-		return
-	}
-
-	if err := db.DB(context.Background()).AutoMigrate(
-		&oauth.User{},
-		&oauth.UserPayConfig{},
-	); err != nil {
-		log.Fatalf("[PostgreSQL] auto migrate failed: %v\n", err)
-	}
-	log.Printf("[PostgreSQL] auto migrate success\n")
-}
+package merchant

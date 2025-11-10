@@ -34,7 +34,7 @@ const (
 	UserObjKey  = "user_obj"
 )
 
-type TrustLevel int8
+type TrustLevel uint8
 
 const (
 	TrustLevelNewUser TrustLevel = iota
@@ -42,6 +42,15 @@ const (
 	TrustLevelUser
 	TrustLevelActiveUser
 	TrustLevelLeader
+)
+
+type PayLevel uint8
+
+const (
+	PayLevelFree PayLevel = iota
+	PayLevelBasic
+	PayLevelStandard
+	PayLevelPremium
 )
 
 const (
