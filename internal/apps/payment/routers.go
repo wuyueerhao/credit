@@ -112,7 +112,7 @@ func CreateMerchantOrder(c *gin.Context) {
 
 	// 获取商家订单过期时间（分钟）
 	var systemConfig model.SystemConfig
-	if err := systemConfig.GetByKey(db.DB(c.Request.Context()), model.ConfigKeyMerchantOrderExpireMinutes); err != nil {
+	if err := systemConfig.GetByKey(c.Request.Context(), model.ConfigKeyMerchantOrderExpireMinutes); err != nil {
 		c.JSON(http.StatusInternalServerError, util.Err(err.Error()))
 		return
 	}

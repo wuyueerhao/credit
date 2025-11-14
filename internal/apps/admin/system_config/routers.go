@@ -77,7 +77,18 @@ func CreateSystemConfig(c *gin.Context) {
 		Description: req.Description,
 	}
 
-	if err := db.DB(c.Request.Context()).Create(&config).Error; err != nil {
+	if err := db.DB(c.Request.Context()).Transaction(func(tx *gorm.DB) error {
+		// 创建配置
+		if err := tx.Create(&config).Error; err != nil {
+			return err
+		}
+
+		if err := db.HSetJSON(c.Request.Context(), model.SystemConfigRedisHashKey, req.Key, &config); err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
 		c.JSON(http.StatusInternalServerError, util.Err(err.Error()))
 		return
 	}
@@ -137,9 +148,11 @@ func UpdateSystemConfig(c *gin.Context) {
 		return
 	}
 
+	key := c.Param("key")
+
 	// 检查配置是否存在
 	var config model.SystemConfig
-	if err := db.DB(c.Request.Context()).Where("key = ?", c.Param("key")).First(&config).Error; err != nil {
+	if err := db.DB(c.Request.Context()).Where("key = ?", key).First(&config).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, util.Err(SystemConfigNotFound))
 		} else {
@@ -148,13 +161,22 @@ func UpdateSystemConfig(c *gin.Context) {
 		return
 	}
 
-	// 更新配置
-	if err := db.DB(c.Request.Context()).
-		Model(&config).
-		Updates(map[string]interface{}{
-			"value":       req.Value,
-			"description": req.Description,
-		}).Error; err != nil {
+	if err := db.DB(c.Request.Context()).Transaction(func(tx *gorm.DB) error {
+		// 更新配置
+		if err := tx.Model(&config).
+			Updates(map[string]interface{}{
+				"value":       req.Value,
+				"description": req.Description,
+			}).Error; err != nil {
+			return err
+		}
+
+		if err := db.HSetJSON(c.Request.Context(), model.SystemConfigRedisHashKey, key, &config); err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
 		c.JSON(http.StatusInternalServerError, util.Err(err.Error()))
 		return
 	}
@@ -169,9 +191,11 @@ func UpdateSystemConfig(c *gin.Context) {
 // @Success 200 {object} util.ResponseAny
 // @Router /api/v1/admin/system-configs/{key} [delete]
 func DeleteSystemConfig(c *gin.Context) {
+	key := c.Param("key")
+
 	// 检查配置是否存在
 	var config model.SystemConfig
-	if err := db.DB(c.Request.Context()).Where("key = ?", c.Param("key")).First(&config).Error; err != nil {
+	if err := db.DB(c.Request.Context()).Where("key = ?", key).First(&config).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, util.Err(SystemConfigNotFound))
 		} else {
@@ -180,7 +204,18 @@ func DeleteSystemConfig(c *gin.Context) {
 		return
 	}
 
-	if err := db.DB(c.Request.Context()).Delete(&config).Error; err != nil {
+	if err := db.DB(c.Request.Context()).Transaction(func(tx *gorm.DB) error {
+		// 删除配置
+		if err := tx.Delete(&config).Error; err != nil {
+			return err
+		}
+
+		if err := db.Redis.HDel(c.Request.Context(), model.SystemConfigRedisHashKey, key).Err(); err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
 		c.JSON(http.StatusInternalServerError, util.Err(err.Error()))
 		return
 	}

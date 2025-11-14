@@ -24,15 +24,23 @@
 package model
 
 import (
+	"context"
+	"errors"
+	"github.com/redis/go-redis/v9"
 	"time"
 
-	"gorm.io/gorm"
+	"github.com/linux-do/pay/internal/db"
 )
 
 // 配置键常量 - 所有系统配置的 key 定义
 const (
 	ConfigKeyMerchantOrderExpireMinutes = "merchant_order_expire_minutes" // 商家订单过期时间（分钟）
 	ConfigKeyWebsiteOrderExpireMinutes  = "website_order_expire_minutes"  // 网站订单过期时间（分钟）
+)
+
+const (
+	// SystemConfigRedisHashKey Redis Hash key，存储所有系统配置
+	SystemConfigRedisHashKey = "system:system_configs"
 )
 
 type SystemConfig struct {
@@ -43,7 +51,22 @@ type SystemConfig struct {
 	CreatedAt   time.Time `json:"created_at" gorm:"autoCreateTime"`
 }
 
-// GetByKey 通过 key 查询配置
-func (sc *SystemConfig) GetByKey(tx *gorm.DB, key string) error {
-	return tx.Where("key = ?", key).First(sc).Error
+// GetByKey 通过 key 查询配置（带 Redis 缓存）
+func (sc *SystemConfig) GetByKey(ctx context.Context, key string) error {
+	if err := db.HGetJSON(ctx, SystemConfigRedisHashKey, key, sc); err == nil {
+		return nil
+	} else if !errors.Is(err, redis.Nil) {
+		// Redis 服务错误，返回错误
+		return err
+	}
+
+	// 查数据库
+	if err := db.DB(ctx).Where("key = ?", key).First(sc).Error; err != nil {
+		return err
+	}
+
+	// 更新 Redis Hash 缓存
+	_ = db.HSetJSON(ctx, SystemConfigRedisHashKey, key, sc)
+
+	return nil
 }

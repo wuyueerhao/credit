@@ -26,6 +26,7 @@ package db
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -77,4 +78,40 @@ func init() {
 	if err != nil {
 		log.Fatalf("[Redis] failed to connect to redis: %v\n", err)
 	}
+}
+
+// HSetJSON 将泛型数据序列化为 JSON 并设置到 Redis Hash
+// ctx: 上下文
+// hashKey: Redis Hash key
+// fieldKey: Hash field key
+// data: 要存储的数据（泛型）
+func HSetJSON[T any](ctx context.Context, hashKey, fieldKey string, data T) error {
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	if err := Redis.HSet(ctx, hashKey, fieldKey, jsonData).Err(); err != nil {
+		return fmt.Errorf("failed to set redis hash: %w", err)
+	}
+
+	return nil
+}
+
+// HGetJSON 从 Redis Hash 获取数据并反序列化为泛型类型
+// ctx: 上下文
+// hashKey: Redis Hash key
+// fieldKey: Hash field key
+// data: 用于接收数据的指针（泛型）
+func HGetJSON[T any](ctx context.Context, hashKey, fieldKey string, data *T) error {
+	val, err := Redis.HGet(ctx, hashKey, fieldKey).Result()
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal([]byte(val), data); err != nil {
+		return fmt.Errorf("failed to unmarshal data: %w", err)
+	}
+
+	return nil
 }
