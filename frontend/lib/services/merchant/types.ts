@@ -82,6 +82,8 @@ export interface CreateMerchantOrderResponse {
 export interface PayMerchantOrderRequest {
   /** 订单号（加密后的订单ID） */
   order_no: string;
+  /** 支付密码（6位数字） */
+  pay_key: string;
 }
 
 /**
@@ -143,6 +145,11 @@ export interface GetMerchantOrderResponse {
     created_at: string;
     /** 更新时间 */
     updated_at: string;
+  };
+  /** 商户信息 */
+  merchant: {
+    /** 应用名称 */
+    app_name: string;
   };
 }
 

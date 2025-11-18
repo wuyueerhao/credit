@@ -125,7 +125,7 @@ export class MerchantService extends BaseService {
    * @description
    * 此接口用于商户创建支付订单，需要使用商户凭证（ClientID:ClientSecret）进行认证。
    * 返回的 pay_url 可以提供给用户进行支付。
-   * 订单有效期为 5 分钟。
+   * 订单有效期根据系统配置确定（通常为5分钟）。
    * 
    * @param request - 创建订单请求参数
    * @param clientId - 商户的 Client ID
@@ -166,7 +166,7 @@ export class MerchantService extends BaseService {
 
     return this.post<CreateMerchantOrderResponse>('/payment/orders', request, {
       headers: {
-        Authorization: `Bearer ${encodedAuth}`,
+        Authorization: `Basic ${encodedAuth}`,
       },
     });
   }
@@ -232,7 +232,10 @@ export class MerchantService extends BaseService {
    *
    * if (orderNo) {
    *   try {
-   *     await MerchantService.payMerchantOrder({ order_no: orderNo });
+   *     await MerchantService.payMerchantOrder({
+   *       order_no: orderNo,
+   *       pay_key: '123456'  // 用户的支付密码
+   *     });
    *     // 支付成功
    *     console.log('支付成功');
    *   } catch (error) {
@@ -248,7 +251,7 @@ export class MerchantService extends BaseService {
    * - 支付成功后会扣除手续费（根据用户的支付等级）
    */
   static async payMerchantOrder(request: PayMerchantOrderRequest): Promise<void> {
-    return this.get<void>('/payment', { order_no: request.order_no });
+    return this.post<void>('/payment', request);
   }
 }
 

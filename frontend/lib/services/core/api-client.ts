@@ -127,14 +127,14 @@ apiClient.interceptors.response.use(
     // 403 权限不足错误
     if (error.response?.status === 403) {
       return Promise.reject(
-        new ForbiddenError(error.response.data?.error_msg),
+        new ForbiddenError(error.response.data?.error_msg || '权限不足'),
       );
     }
 
     // 404 资源未找到错误
     if (error.response?.status === 404) {
       return Promise.reject(
-        new NotFoundError(error.response.data?.error_msg),
+        new NotFoundError(error.response.data?.error_msg || '请求的资源不存在'),
       );
     }
 
@@ -142,7 +142,7 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 400) {
       return Promise.reject(
         new ValidationError(
-          error.response.data?.error_msg,
+          error.response.data?.error_msg || '请求参数验证失败',
           error.response.data?.details,
         ),
       );
@@ -152,7 +152,7 @@ apiClient.interceptors.response.use(
     if (error.response && error.response.status >= 500) {
       return Promise.reject(
         new ServerError(
-          error.response.data?.error_msg,
+          error.response.data?.error_msg || '服务器内部错误，请稍后重试',
           error.response.status,
         ),
       );
