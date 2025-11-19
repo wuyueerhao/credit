@@ -100,14 +100,14 @@ function TransactionTableRow({ order }: { order: Order }) {
                 <Avatar className="h-4 w-4">
                   <AvatarImage src={undefined} />
                   <AvatarFallback className="text-[9px] bg-primary text-primary-foreground">
-                    {order.payer_username.substring(0, 1)}
+                    {order.payer_username.substring(0, 1).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="text-xs font-bold">⭢</div>
                 <Avatar className="h-4 w-4">
                   <AvatarImage src={undefined} />
                   <AvatarFallback className="text-[9px] bg-primary text-primary-foreground">
-                    {order.payee_username.substring(0, 1)}
+                    {order.payee_username.substring(0, 1).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
               </div>

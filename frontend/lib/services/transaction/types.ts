@@ -6,7 +6,7 @@ export type OrderType = 'receive' | 'payment' | 'transfer' | 'community';
 /**
  * 订单状态
  */
-export type OrderStatus = 'success' | 'pending' | 'failed' | 'expired' | 'disputing' | 'refund' | 'refunding';
+export type OrderStatus = 'success' | 'pending' | 'failed' | 'expired' | 'disputing' | 'refund' | 'refused';
 
 /**
  * 订单信息

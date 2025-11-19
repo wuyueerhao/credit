@@ -27,47 +27,59 @@ export const statusConfig: Record<OrderStatus, { label: string; color: string }>
   expired: { label: '已过期', color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300' },
   disputing: { label: '争议中', color: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300' },
   refund: { label: '已退款', color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300' },
-  refunding: { label: '退款中', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' }
+  refused: { label: '已拒绝', color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' }
 }
 
 /* 时间范围选项 */
 export const timeRangeOptions = [
-  { label: "今天", getValue: () => {
-    const today = new Date()
-    const tomorrow = new Date(today)
-    tomorrow.setDate(today.getDate() + 1)
-    tomorrow.setMilliseconds(-1)
-    return { from: today, to: tomorrow }
-  }},
-  { label: "最近 7 天", getValue: () => {
-    const to = new Date()
-    const from = new Date()
-    from.setDate(from.getDate() - 7)
-    return { from, to }
-  }},
-  { label: "最近 1 个月", getValue: () => {
-    const to = new Date()
-    const from = new Date()
-    from.setDate(from.getDate() - 30)
-    return { from, to }
-  }},
-  { label: "最近 6 个月", getValue: () => {
-    const to = new Date()
-    const from = new Date()
-    from.setMonth(from.getMonth() - 6)
-    return { from, to }
-  }},
-  { label: "本月至今", getValue: () => {
-    const to = new Date()
-    const from = new Date(to.getFullYear(), to.getMonth(), 1)
-    return { from, to }
-  }},
-  { label: "本季至今", getValue: () => {
-    const to = new Date()
-    const quarter = Math.floor(to.getMonth() / 3)
-    const from = new Date(to.getFullYear(), quarter * 3, 1)
-    return { from, to }
-  }},
+  {
+    label: "今天", getValue: () => {
+      const today = new Date()
+      const tomorrow = new Date(today)
+      tomorrow.setDate(today.getDate() + 1)
+      tomorrow.setMilliseconds(-1)
+      return { from: today, to: tomorrow }
+    }
+  },
+  {
+    label: "最近 7 天", getValue: () => {
+      const to = new Date()
+      const from = new Date()
+      from.setDate(from.getDate() - 7)
+      return { from, to }
+    }
+  },
+  {
+    label: "最近 1 个月", getValue: () => {
+      const to = new Date()
+      const from = new Date()
+      from.setDate(from.getDate() - 30)
+      return { from, to }
+    }
+  },
+  {
+    label: "最近 6 个月", getValue: () => {
+      const to = new Date()
+      const from = new Date()
+      from.setMonth(from.getMonth() - 6)
+      return { from, to }
+    }
+  },
+  {
+    label: "本月至今", getValue: () => {
+      const to = new Date()
+      const from = new Date(to.getFullYear(), to.getMonth(), 1)
+      return { from, to }
+    }
+  },
+  {
+    label: "本季至今", getValue: () => {
+      const to = new Date()
+      const quarter = Math.floor(to.getMonth() / 3)
+      const from = new Date(to.getFullYear(), quarter * 3, 1)
+      return { from, to }
+    }
+  },
   { label: "所有时间", getValue: () => null },
 ]
 
@@ -229,9 +241,8 @@ export function TableFilter({
                         handleTimeRangeChange(range)
                         onQuickSelectionChange?.(selection.label)
                       }}
-                      className={`w-full text-left px-2 py-1.5 text-xs rounded-md hover:bg-accent transition-colors cursor-pointer ${
-                        selectedQuickSelection === selection.label ? 'bg-accent text-accent-foreground' : ''
-                      }`}
+                      className={`w-full text-left px-2 py-1.5 text-xs rounded-md hover:bg-accent transition-colors cursor-pointer ${selectedQuickSelection === selection.label ? 'bg-accent text-accent-foreground' : ''
+                        }`}
                     >
                       {selection.label}
                     </button>
@@ -291,11 +302,10 @@ function FilterSelect<T extends string>({ label, selectedValues, options, onTogg
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className={`!h-6 !min-h-6 text-xs font-bold rounded-full border border-dashed shadow-none !px-2.5 !py-1 gap-2 inline-flex items-center w-auto hover:bg-accent ${
-          selectedValues.length > 0
+        <button className={`!h-6 !min-h-6 text-xs font-bold rounded-full border border-dashed shadow-none !px-2.5 !py-1 gap-2 inline-flex items-center w-auto hover:bg-accent ${selectedValues.length > 0
             ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
             : 'border-muted-foreground/20'
-        }`}>
+          }`}>
           <Filter className="h-3 w-3 text-muted-foreground" />
           <span className="text-muted-foreground text-xs font-bold">{label}</span>
           {selectedValues.length > 0 && (
