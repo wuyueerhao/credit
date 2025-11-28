@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { Spinner } from "@/components/ui/spinner"
 import { ErrorInline } from "@/components/layout/error"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { EmptyStateWithBorder } from "@/components/layout/empty"
 import { LoadingStateWithBorder } from "@/components/layout/loading"
 import { ListRestart, Layers, LucideIcon, Banknote, X, AlertTriangle, TicketSlash } from "lucide-react"
@@ -39,7 +40,7 @@ import { Textarea } from "@/components/ui/textarea"
 export function TransactionDataTable({ transactions }: { transactions: Order[] }) {
   return (
     <div className="border border-dashed shadow-none rounded-lg overflow-hidden">
-      <div className="overflow-x-auto">
+      <ScrollArea className="w-full">
         <Table>
           <TableHeader>
             <TableRow className="border-b border-dashed">
@@ -66,7 +67,8 @@ export function TransactionDataTable({ transactions }: { transactions: Order[] }
             ))}
           </TableBody>
         </Table>
-      </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
     </div>
   )
 }

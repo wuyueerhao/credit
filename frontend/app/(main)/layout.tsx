@@ -29,9 +29,9 @@ export default function MainLayout({
           }
         >
           <AppSidebar />
-          <SidebarInset className="flex flex-col min-w-0">
+          <SidebarInset className="flex flex-col min-w-0 h-screen">
             <SiteHeader />
-            <div className="flex flex-1 flex-col bg-background overflow-y-auto overflow-x-hidden min-w-0">
+            <div className="flex flex-1 flex-col bg-background overflow-y-auto overflow-x-hidden min-w-0 hide-scrollbar">
               <div className="w-full max-w-[1320px] mx-auto px-12 min-w-0">
                 <motion.div
                   key={pathname}
