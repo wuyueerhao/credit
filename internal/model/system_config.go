@@ -26,8 +26,11 @@ package model
 import (
 	"context"
 	"errors"
-	"github.com/redis/go-redis/v9"
+	"fmt"
+	"strconv"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 
 	"github.com/linux-do/pay/internal/db"
 )
@@ -36,6 +39,7 @@ import (
 const (
 	ConfigKeyMerchantOrderExpireMinutes = "merchant_order_expire_minutes" // 商家订单过期时间（分钟）
 	ConfigKeyWebsiteOrderExpireMinutes  = "website_order_expire_minutes"  // 网站订单过期时间（分钟）
+	ConfigKeyDisputeTimeWindowHours     = "dispute_time_window_hours"     // 商家争议时间窗口（小时）
 )
 
 const (
@@ -69,4 +73,19 @@ func (sc *SystemConfig) GetByKey(ctx context.Context, key string) error {
 	_ = db.HSetJSON(ctx, SystemConfigRedisHashKey, key, sc)
 
 	return nil
+}
+
+// GetIntByKey 通过 key 查询配置并转换为 int 类型
+func GetIntByKey(ctx context.Context, key string) (int, error) {
+	var sc SystemConfig
+	if err := sc.GetByKey(ctx, key); err != nil {
+		return 0, err
+	}
+
+	value, err := strconv.Atoi(sc.Value)
+	if err != nil {
+		return 0, fmt.Errorf("配置 %s 的值 '%s' 无法转换为整数: %w", key, sc.Value, err)
+	}
+
+	return value, nil
 }
