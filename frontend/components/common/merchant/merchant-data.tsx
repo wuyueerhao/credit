@@ -2,7 +2,9 @@
 
 import * as React from "react"
 import { useEffect } from "react"
-import { RefreshCw, Undo2, FileText, Settings, BarChart3, Zap } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Undo2, FileText, Zap } from "lucide-react"
+import { toast } from "sonner"
 import { TableFilter } from "@/components/common/general/table-filter"
 import { TransactionTableList } from "@/components/common/general/table-data"
 import type { MerchantAPIKey, OrderType, OrderStatus } from "@/lib/services"
@@ -19,36 +21,12 @@ const MERCHANT_ACTIONS = [
     action: "refund",
   },
   {
-    title: "查看订单",
-    description: "查看详细的订单信息",
+    title: "所有订单",
+    description: "获取商户的所有订单",
     icon: FileText,
     color: "text-blue-600",
     bgColor: "bg-blue-50 dark:bg-blue-950/20",
-    action: "view-order",
-  },
-  {
-    title: "刷新数据",
-    description: "同步最新的交易数据",
-    icon: RefreshCw,
-    color: "text-green-600",
-    bgColor: "bg-green-50 dark:bg-green-950/20",
-    action: "refresh",
-  },
-  {
-    title: "API 设置",
-    description: "配置 Webhook 和通知",
-    icon: Settings,
-    color: "text-purple-600",
-    bgColor: "bg-purple-50 dark:bg-purple-950/20",
-    action: "settings",
-  },
-  {
-    title: "数据报表",
-    description: "查看详细的统计报表",
-    icon: BarChart3,
-    color: "text-indigo-600",
-    bgColor: "bg-indigo-50 dark:bg-indigo-950/20",
-    action: "reports",
+    action: "view-all",
   },
   {
     title: "快速测试",
@@ -69,7 +47,6 @@ interface MerchantDataProps {
  * 显示应用的收款数据和统计信息
  */
 export function MerchantData({ apiKey }: MerchantDataProps) {
-  // 计算最近一个月的时间范围
   const getLastMonthRange = () => {
     const now = new Date()
     const endTime = now.toISOString()
@@ -97,6 +74,7 @@ export function MerchantData({ apiKey }: MerchantDataProps) {
  * 商户数据内容组件
  */
 function MerchantDataContent({ apiKey }: MerchantDataProps) {
+  const router = useRouter()
   const {
     transactions,
     total,
@@ -147,6 +125,26 @@ function MerchantDataContent({ apiKey }: MerchantDataProps) {
     loadMore()
   }
 
+  const handleRefund = () => {
+    setSelectedStatuses(['disputing'])
+
+    toast.success('已切换至争议中订单', {
+      description: '正在显示所有争议中的交易'
+    })
+  }
+
+  const handleViewAllOrders = () => {
+    clearAllFilters()
+
+    toast.success('已显示所有订单', {
+      description: '正在获取商户的所有交易'
+    })
+  }
+
+  const handleTest = () => {
+    router.push('/paying/demo')
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -160,7 +158,13 @@ function MerchantDataContent({ apiKey }: MerchantDataProps) {
                 key={index}
                 className="rounded-lg p-4 border border-dashed hover:border-primary/50 shadow-none transition-all text-left group bg-background"
                 onClick={() => {
-                  console.log('Action clicked:', action.action)
+                  if (action.action === 'refund') {
+                    handleRefund()
+                  } else if (action.action === 'view-all') {
+                    handleViewAllOrders()
+                  } else if (action.action === 'test') {
+                    handleTest()
+                  }
                 }}
               >
                 <div className="flex items-center gap-3 mb-3">

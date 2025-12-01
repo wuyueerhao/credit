@@ -187,7 +187,6 @@ export function TransactionProvider({ children, defaultParams = {} }: Transactio
       )
     )
 
-    // 清除所有缓存，确保下次刷新时获取最新数据
     cacheRef.current = {}
   }, [])
 

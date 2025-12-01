@@ -111,8 +111,8 @@ export function DisputeDialog({ mode, open, onOpenChange }: DisputeDialogProps) 
 
   const dialogTitle = mode === 'pending' ? '待处理的争议' : '我发起的争议'
   const dialogDescription = mode === 'pending'
-    ? '显示所有需要您处理的争议申请'
-    : '显示您发起的所有争议记录'
+    ? '您作为收款方，需要处理所有争议中的支付订单'
+    : '您作为付款方发起的所有争议记录'
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

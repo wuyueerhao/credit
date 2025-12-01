@@ -32,13 +32,11 @@ function calculatePercentages(available: number, total: number) {
 export function BalanceSummary() {
   const { user, loading } = useUser()
 
-  // 计算余额数据
   const available = user?.available_balance ?? 0
   const community = user?.community_balance ?? 0
   const total = available + community
   const pending = total - available
 
-  // 计算百分比
   const percentages = React.useMemo(
     () => calculatePercentages(available, total),
     [available, total]
@@ -46,7 +44,6 @@ export function BalanceSummary() {
 
   return (
     <div className="space-y-4">
-      {/* 可视化进度条 */}
       <div
         className={`w-full h-4 ${COLORS.emptyState} rounded-sm overflow-hidden flex`}
         role="progressbar"
@@ -67,14 +64,12 @@ export function BalanceSummary() {
         />
       </div>
 
-      {/* 余额详情列表 */}
       <div className="space-y-2">
         <div className="flex justify-between items-center text-xs font-medium pb-2 border-b border-border/80">
           <span>支付类型</span>
           <span className="text-muted-foreground">金额</span>
         </div>
 
-        {/* 可用余额 */}
         <div className="flex justify-between items-center font-bold text-sm pb-2 border-b border-border/80">
           <div className="flex items-center gap-2">
             <div className={`size-2.5 ${COLORS.available} rounded-xs`} aria-hidden="true" />
@@ -85,7 +80,6 @@ export function BalanceSummary() {
           </span>
         </div>
 
-        {/* 未来款项 */}
         <div className="flex justify-between items-center font-bold text-sm pb-2 border-b border-border/80">
           <div className="flex items-center gap-2">
             <div className={`size-2.5 ${COLORS.pending} rounded-xs`} aria-hidden="true" />

@@ -160,7 +160,7 @@ function PayConfigDetailPanel({
 
                   const numValue = parseInt(value)
                   if (isNaN(numValue)) {
-                    return // 无效数字，忽略
+                    return
                   }
 
                   if (numValue >= 0 && numValue <= 100) {
