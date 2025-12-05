@@ -29,4 +29,5 @@ const (
 	UpdateSingleUserGamificationScoreTask = "user:gamification:update_single_score_task"
 	AutoRefundExpiredDisputesTask         = "dispute:auto_refund_expired"
 	AutoRefundSingleDisputeTask           = "dispute:auto_refund_single"
+	MerchantPaymentNotifyTask             = "payment:merchant_notify" // 商户支付回调任务
 )

@@ -25,7 +25,8 @@
 package payment
 
 const (
-	APIKeyObjKey = "payment_api_key_obj"
+	APIKeyObjKey          = "payment_api_key_obj"
+	CreateOrderRequestKey = "payment_create_order_request"
 )
 
 const (
