@@ -55,7 +55,8 @@ const createDisputeOrder = (dispute: DisputeWithOrder, type: 'receive' | 'paymen
   trade_time: '',
   expires_at: '',
   created_at: '',
-  updated_at: ''
+  updated_at: '',
+  payment_type: ''
 })
 
 /**

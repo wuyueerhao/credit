@@ -3,7 +3,7 @@
 import { type ReactNode, useState } from "react"
 import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
-import { RippleButton } from "@/components/animate-ui/components/buttons/ripple"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -255,27 +255,32 @@ export function LoginForm({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <div className="flex flex-col items-center gap-2">
-        <div className="flex size-8 items-center justify-center rounded-md m-4">
-          <SquareArrowUpRight className="size-6" />
-        </div>
-        <h1 className="text-xl font-bold">欢迎使用 LINUX DO PAY</h1>
+        <h1 className="text-xl font-bold tracking-tight text-center">
+          欢迎使用 LINUX DO PAY
+        </h1>
       </div>
-      <RippleButton
-        variant="default"
-        type="button"
-        className="w-full tracking-wide"
-        onClick={handleLogin}
-        disabled={isLoading}
-      >
-        {isLoading ? <><Spinner />前往验证...</> : "使用 Linux Do 账户登录"}
-      </RippleButton>
-      <div className="text-muted-foreground text-center text-xs text-balance">
-        登录即表示您同意我们的{" "}
+
+      <div className="grid gap-4 mx-4">
+        <Button
+          variant="default"
+          type="button"
+          className="w-full tracking-wide bg-blue-600 hover:bg-blue-700 text-white text-sm shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 transition-all active:scale-[0.98]"
+          onClick={handleLogin}
+          disabled={isLoading}
+        >
+          {isLoading ? <Spinner className="mr-2" /> : <SquareArrowUpRight className="mr-2 h-4 w-4" />}
+          {isLoading ? "正在跳转..." : "使用 LINUX DO 登录"}
+        </Button>
+
+      </div>
+
+      <div className="text-muted-foreground text-center text-xs text-balance opacity-75 hover:opacity-100 transition-opacity">
+        登录即代表您同意我们的{" "}
         <Dialog>
           <DialogTrigger asChild>
             <button
               type="button"
-              className="text-primary underline underline-offset-4 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-xs px-1"
+              className="underline underline-offset-4 hover:text-foreground"
             >
               服务条款
             </button>
@@ -295,12 +300,12 @@ export function LoginForm({
             </Accordion>
           </DialogContent>
         </Dialog>
-        {" "}和{" "}
+        {" "}及{" "}
         <Dialog>
           <DialogTrigger asChild>
             <button
               type="button"
-              className="text-primary underline underline-offset-4 hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-xs px-1"
+              className="underline underline-offset-4 hover:text-foreground"
             >
               隐私政策
             </button>
@@ -320,6 +325,7 @@ export function LoginForm({
             </Accordion>
           </DialogContent>
         </Dialog>
+        .
       </div>
     </div>
   )

@@ -56,6 +56,8 @@ export interface Order {
   redirect_uri?: string;
   /** 关联的争议 ID（可选） */
   dispute_id?: number;
+  /** 支付类型 */
+  payment_type: string;
 }
 
 /**

@@ -70,8 +70,8 @@ const data = {
     { title: "支付配置", url: "/admin/user_pay", icon: Settings },
   ],
   document: [
-    { title: "接口文档", url: "#", icon: CreditCard },
-    { title: "使用文档", url: "#", icon: FileText },
+    { title: "接口文档", url: "/docs/api", icon: CreditCard },
+    { title: "使用文档", url: "/docs/how-to-use-demo", icon: FileText },
   ],
   products: [
     { title: "报表", url: "#", icon: BarChart3 },

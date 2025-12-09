@@ -18,6 +18,8 @@ export interface MerchantAPIKey {
   app_description: string;
   /** 重定向 URI */
   redirect_uri: string;
+  /** 通知 URL */
+  notify_url: string;
   /** 创建时间 */
   created_at: string;
   /** 更新时间 */
@@ -38,6 +40,8 @@ export interface CreateAPIKeyRequest {
   app_description?: string;
   /** 重定向 URI（最大100字符，必须是有效的 URL） */
   redirect_uri: string;
+  /** 通知 URL（最大100字符，必须是有效的 URL） */
+  notify_url: string;
 }
 
 /**
@@ -52,6 +56,8 @@ export interface UpdateAPIKeyRequest {
   app_description?: string;
   /** 重定向 URI（最大100字符，必须是有效的 URL，可选） */
   redirect_uri?: string;
+  /** 通知 URL（最大100字符，必须是有效的 URL，可选） */
+  notify_url?: string;
 }
 
 /**
@@ -116,6 +122,8 @@ export interface GetMerchantOrderResponse {
     status: string;
     /** 订单类型 */
     type: string;
+    /** 支付类型 */
+    payment_type: string;
     /** 备注 */
     remark: string;
     /** 客户端ID */

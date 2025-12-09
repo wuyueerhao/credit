@@ -44,6 +44,7 @@ export function MerchantDialog({
     app_homepage_url: '',
     app_description: '',
     redirect_uri: '',
+    notify_url: '',
   })
 
   /**
@@ -56,6 +57,7 @@ export function MerchantDialog({
         app_homepage_url: apiKey.app_homepage_url,
         app_description: apiKey.app_description,
         redirect_uri: apiKey.redirect_uri,
+        notify_url: apiKey.notify_url,
       })
     } else {
       setFormData({
@@ -63,6 +65,7 @@ export function MerchantDialog({
         app_homepage_url: '',
         app_description: '',
         redirect_uri: '',
+        notify_url: '',
       })
     }
   }, [mode, apiKey])
@@ -83,6 +86,7 @@ export function MerchantDialog({
         app_homepage_url: apiKey.app_homepage_url,
         app_description: apiKey.app_description,
         redirect_uri: apiKey.redirect_uri,
+        notify_url: apiKey.notify_url,
       })
     } else {
       setFormData({
@@ -90,13 +94,14 @@ export function MerchantDialog({
         app_homepage_url: '',
         app_description: '',
         redirect_uri: '',
+        notify_url: '',
       })
     }
   }
 
   const validateForm = (): { valid: boolean; error?: string } => {
     /* 验证必填项 */
-    if (!formData.app_name || !formData.app_homepage_url || !formData.redirect_uri) {
+    if (!formData.app_name || !formData.app_homepage_url || !formData.redirect_uri || !formData.notify_url) {
       return { valid: false, error: '请填写所有必填项' }
     }
 
@@ -113,6 +118,11 @@ export function MerchantDialog({
     /* 验证回调 URI */
     if (!isValidUrl(formData.redirect_uri)) {
       return { valid: false, error: '回调 URI 格式不正确' }
+    }
+
+    /* 验证通知 URL */
+    if (!isValidUrl(formData.notify_url)) {
+      return { valid: false, error: '通知 URL 格式不正确' }
     }
 
     /* 验证应用描述长度 */
@@ -245,6 +255,20 @@ export function MerchantDialog({
               disabled={processing}
             />
             <p className="text-xs text-muted-foreground">URL 必须为包含 http:// 或 https:// ，用于接收支付完成后的回调</p>
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="notify_url">通知 URL <span className="text-red-500">*</span></Label>
+            <Input
+              id="notify_url"
+              type="url"
+              placeholder="https://pay.linux.do/notify"
+              maxLength={100}
+              value={formData.notify_url}
+              onChange={(e) => setFormData({ ...formData, notify_url: e.target.value })}
+              disabled={processing}
+            />
+            <p className="text-xs text-muted-foreground">URL 必须为包含 http:// 或 https:// ，用于接收支付成功的异步通知</p>
           </div>
         </div>
 

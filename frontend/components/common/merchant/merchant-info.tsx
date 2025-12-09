@@ -99,6 +99,20 @@ export function MerchantInfo({ apiKey, onUpdate, onDelete }: MerchantInfoProps) 
               <ExternalLink className="h-3 w-3 flex-shrink-0 ml-1" />
             </Link>
           </div>
+
+          <div className="px-3 py-2 flex items-center justify-between">
+            <label className="text-xs font-medium text-muted-foreground">通知 URL</label>
+            <Link
+              href={apiKey.notify_url}
+              target="_blank"
+              className="text-xs text-indigo-500 hover:underline flex items-center gap-1 text-right max-w-[70%]"
+            >
+              <span className="truncate flex-1 min-w-0">
+                {apiKey.notify_url}
+              </span>
+              <ExternalLink className="h-3 w-3 flex-shrink-0 ml-1" />
+            </Link>
+          </div>
         </div>
       </div>
 
