@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Noto_Sans_SC, Geist_Mono } from 'next/font/google';
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { CustomThemeProvider } from "@/lib/theme";
 import "./globals.css";
 
 const inter = Inter({
@@ -35,11 +36,11 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
-      className={`${inter.variable} ${notoSansSC.variable} ${geistMono.variable} hide-scrollbar font-sans`}
+      className={`${ inter.variable } ${ notoSansSC.variable } ${ geistMono.variable } hide-scrollbar font-sans`}
       suppressHydrationWarning
     >
       <body
-        className={`${inter.variable} ${notoSansSC.variable} ${geistMono.variable} hide-scrollbar font-sans antialiased`}
+        className={`${ inter.variable } ${ notoSansSC.variable } ${ geistMono.variable } hide-scrollbar font-sans antialiased`}
       >
         <ThemeProvider
           attribute="class"
@@ -47,8 +48,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster position="top-center" />
+          <CustomThemeProvider>
+            {children}
+            <Toaster position="top-center" />
+          </CustomThemeProvider>
         </ThemeProvider>
       </body>
     </html>

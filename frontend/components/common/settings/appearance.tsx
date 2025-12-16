@@ -6,12 +6,17 @@ import { Moon, Sun, Loader2, Check, Monitor } from "lucide-react"
 import { useTheme } from "next-themes"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { getThemes, setTheme, getCurrentThemeId, type Theme } from "@/lib/utils/theme"
+import { useCustomTheme } from "@/lib/theme"
 import { cn } from "@/lib/utils"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 
 function ThemeModeSection() {
   const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const modes = [
     { id: "light", name: "明亮", icon: Sun },
@@ -19,10 +24,39 @@ function ThemeModeSection() {
     { id: "system", name: "自动", icon: Monitor }
   ]
 
+  if (!mounted) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-medium text-sm text-foreground">主题模式</h2>
+          <p className="text-xs text-muted-foreground">
+            选择应用程序的整体明暗主题
+          </p>
+        </div>
+        <div className="flex gap-2">
+          {modes.map((mode) => {
+            const Icon = mode.icon
+            return (
+              <Button
+                key={mode.id}
+                variant="secondary"
+                size="sm"
+                className="flex-1 text-xs"
+              >
+                {Icon && <Icon className="size-3 mr-1" />}
+                {mode.name}
+              </Button>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-medium text-sm text-muted-foreground">主题模式</h2>
+        <h2 className="font-medium text-sm text-foreground">主题模式</h2>
         <p className="text-xs text-muted-foreground">
           选择应用程序的整体明暗主题
         </p>
@@ -52,37 +86,22 @@ function ThemeModeSection() {
 }
 
 function InterfaceAppearanceSection() {
-  const [themes, setThemes] = React.useState<Theme[]>([])
-  const [currentThemeId, setCurrentThemeId] = React.useState<string | null>(null)
-  const [loading, setLoading] = React.useState(true)
+  const { themes, currentThemeId, setTheme: setCustomTheme, isLoading } = useCustomTheme()
+  const { theme: mode } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
   const [switching, setSwitching] = React.useState<string | null>(null)
 
   React.useEffect(() => {
-    async function load() {
-      try {
-        const [t, c] = await Promise.all([getThemes(), getCurrentThemeId()])
-        setThemes(t)
-        setCurrentThemeId(c)
-      } catch (e) {
-        console.error(e)
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
+    setMounted(true)
   }, [])
 
-  const handleSetTheme = async (theme: Theme) => {
-    if (switching === theme.id) return
-    setSwitching(theme.id)
+  const handleSetTheme = (themeId: string) => {
+    if (switching === themeId) return
+    setSwitching(themeId)
     try {
-      const res = await setTheme(theme.id)
-      if (res.success) {
-        setCurrentThemeId(theme.id)
-        toast.success(`外观已切换为 ${ theme.name }`)
-      } else {
-        toast.error(res.error || "切换失败")
-      }
+      setCustomTheme(themeId)
+      const themeName = themes.find(t => t.id === themeId)?.name || themeId
+      toast.success(`外观已切换为 ${ themeName }`)
     } catch {
       toast.error("切换失败")
     } finally {
@@ -90,17 +109,19 @@ function InterfaceAppearanceSection() {
     }
   }
 
+  const isDark = mounted && (mode === 'dark' || (mode === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches))
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-medium text-sm text-muted-foreground">界面外观</h2>
+        <h2 className="font-medium text-sm text-foreground">界面外观</h2>
         <p className="text-xs text-muted-foreground">
           选择界面的配色方案和视觉风格
         </p>
       </div>
 
       <div>
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center justify-center p-12">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground/50" />
           </div>
@@ -109,28 +130,41 @@ function InterfaceAppearanceSection() {
             {themes.map((theme) => {
               const isActive = currentThemeId === theme.id || (!currentThemeId && theme.id === "default.css")
               const isSwitching = switching === theme.id
+              const colors = isDark ? theme.colors.dark : theme.colors.light
 
               return (
                 <div
                   key={theme.id}
-                  onClick={() => handleSetTheme(theme)}
+                  onClick={() => handleSetTheme(theme.id)}
                   className={cn(
                     "group relative cursor-pointer rounded-xl border transition-all overflow-hidden",
                     isActive
-                      ? "border-primary ring-1 ring-primary/20"
-                      : "border-border/10 hover:border-border"
+                      ? "border-primary ring-2 ring-primary/20"
+                      : "border-border hover:border-border/50 hover:shadow-md"
                   )}
                 >
                   <div
                     className="aspect-[4/3] w-full relative"
-                    style={{ backgroundColor: theme.colors?.background ?? "transparent" }}
+                    style={{ backgroundColor: colors.background || colors['background'] }}
                   >
                     <div className="flex h-full p-2 gap-2">
-                      <div className="w-1/4 h-full rounded-sm opacity-50" style={{ backgroundColor: theme.colors?.sidebar ?? "transparent" }} />
+                      <div
+                        className="w-1/4 h-full rounded-sm opacity-80"
+                        style={{ backgroundColor: colors.sidebar || colors['sidebar'] }}
+                      />
                       <div className="flex-1 space-y-1.5 pt-1">
-                        <div className="h-1.5 w-1/3 rounded-full opacity-60" style={{ backgroundColor: theme.colors?.primary ?? "currentColor" }} />
-                        <div className="h-8 w-full rounded-sm bg-foreground/5 opacity-50" />
-                        <div className="h-4 w-1/2 rounded-sm bg-foreground/5 opacity-30" />
+                        <div
+                          className="h-1.5 w-1/3 rounded-full opacity-90"
+                          style={{ backgroundColor: colors.primary || colors['primary'] }}
+                        />
+                        <div
+                          className="h-8 w-full rounded-sm opacity-40"
+                          style={{ backgroundColor: colors.sidebar || colors['sidebar'] }}
+                        />
+                        <div
+                          className="h-4 w-1/2 rounded-sm opacity-30"
+                          style={{ backgroundColor: colors.sidebar || colors['sidebar'] }}
+                        />
                       </div>
                     </div>
 
@@ -141,7 +175,7 @@ function InterfaceAppearanceSection() {
                     )}
                   </div>
 
-                  <div className="p-2 border-t border-border/10 bg-background/50">
+                  <div className="p-2 border-t border-border/50 bg-card">
                     <div className={cn("text-[10px] font-medium text-center truncate transition-colors", isActive ? "text-primary" : "text-muted-foreground")}>
                       {theme.name}
                     </div>
@@ -155,7 +189,6 @@ function InterfaceAppearanceSection() {
     </div>
   )
 }
-
 
 export function AppearanceMain() {
   return (
